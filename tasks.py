@@ -1,17 +1,19 @@
 from datetime import  datetime,timedelta
 
 class Task:
-    def __init__(self, name="", description="", deadline = None,status=False):
+    def __init__(self, name="", description="", deadline = None,status=False, startdate=datetime.now().strftime("%Y-%m-%d")):
         self.name = name
         self.description = description
+        self.startdate = datetime.strptime(startdate, "%Y-%m-%d")
         if deadline is not None:
-            self.enddate = datetime.now()+timedelta(days=deadline)
+            self.enddate = self.startdate + timedelta(days=deadline)
         else:
             self.enddate = None
         self.status = status
 
+
     def __str__(self):
-        return f"Name: {self.name}\nDescription: {self.description}\nDeadline: {self.enddate.strftime('%Y-%m-%d')}\nStatus: {self.status}"
+        return f"Name: {self.name}\tDescription: {self.description}\tDeadline: {self.enddate.strftime('%Y-%m-%d')}\tStatus: {self.status}"
 
     def isready(self):
         return self.status
@@ -32,10 +34,12 @@ class TaskList:
 
     def addtask(self, task):
         self.tasks.append(task)
+        print(f"+++ Task\n{task}\n+++ Added")
 
     def removetask(self, taskname):
         for task in self.tasks:
             if task.name == taskname:
+                print(f"--- Task\n{task}\n--- Removed")
                 self.tasks.remove(task)
                 break
 
@@ -46,9 +50,14 @@ class TaskList:
                 print(task)
 
     def displaytasks(self):
+        print("Tasks:")
         for task in self.tasks:
             print(task)
 
-    def counttasks(self):
+    def counttasks(self,status = "All"):
+        if status == "Ready":
+            return len([task for task in self.tasks if task.isready()])
+        elif status == "Not Ready":
+            return len([task for task in self.tasks if not task.isready()])
         return len(self.tasks)
 
